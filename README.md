@@ -1,5 +1,5 @@
-#triff
-##TRee dIFFerence
+# triff
+## TRee dIFFerence
 
 triff reports differences between directory A and directory B. Files and directories are compared by path, walking directory A using a depth-first search.
 
