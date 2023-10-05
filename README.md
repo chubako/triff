@@ -60,3 +60,19 @@ Other flags:
   - --nocheckcontent: for regular files, skip checking content, reporting SUCCESS
   - --regular-info: if True, report non-regular files as INFO. Otherwise, report as WARNING (combined with verbosity, helps controlling how much information is reported)
   - --version
+
+## tree_diff
+
+There is a script "scripts/tree_diff" for a user-friendly interface with triff. Usage:
+  tree_diff [options] target_a target_b
+
+Options:
+    --version: show version and exit
+    -i: set loglevel at "info"
+    -w: set loglevel at "warning"
+    -q: don't show log info
+    -n: pass --nocheckcontent flag to triff
+    -p: pass --onlypath flag to triff
+    -r: pass --regular-info flag to triff
+    -v level: set verbosity at "level"
+    -u: run as current user (by default, this script runs as superuser)
