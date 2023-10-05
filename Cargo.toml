@@ -1,0 +1,16 @@
+[package]
+name = "triff"
+version = "1.7.0"
+authors = ["chubako <chubako@armeto.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libc = "0.2.119"
+colored = "2.0.4"
+time = { version = "0.3.23", features = ["local-offset", "formatting"] }
+clap = { version = "3.1.18", features = ["derive"] } # A simple to use, efficient, and full-featured Command Line Argument Parser
+tokio = { version = "1.28.1", features = ["full"] }
+permissions = "0.4.1"
+indicatif = "0.17.5"

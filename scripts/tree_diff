@@ -1,0 +1,132 @@
+#!/bin/sh
+cwd=$(CDPATH= cd -- "$(dirname -- $(realpath "$0"))" && pwd)
+cmd="$cwd"/../target/debug/triff
+
+onexit() {
+  kill "$tail_pid" 2>/dev/null
+}
+
+colorize() {
+  msg="$1"
+  color="$2"
+
+  open="\033["
+  close="m"
+  reset="${open}0${close}"
+
+  case $color in
+    black) code=0
+    ;;
+    red) code=1
+    ;;
+    green) code=2
+    ;;
+    yellow) code=3
+    ;;
+    blue) code=4
+    ;;
+    magenta) code=5
+    ;;
+    cyan) code=6
+    ;;
+    white) code=7
+    ;;
+    *) code="$color"
+    ;;
+  esac
+
+  printf "${open}3${code}${close}%s$reset" "$msg"
+}
+
+trap onexit INT
+trap onexit EXIT
+
+#by default run as root. Override with '-u' flag
+surun="sudo --"
+loglevel="warning"
+verbose="-v 5"
+
+statement="$*"
+
+position=1
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    --version)
+      "$cmd" --version
+      exit
+      ;;
+    -i)
+      loglevel="info"
+      ;;
+    -w)
+      loglevel="warning"
+      ;;
+    -q)
+      loglevel="quiet"
+      ;;
+    -n)
+      nocheckcontent="--nocheckcontent"
+      ;;
+    -p)
+      onlypath="--onlypath"
+      ;;
+    -r)
+      regular_info="--regular-info"
+      ;;
+    -v)
+      shift
+      verbose="-v $1"
+      ;;
+    -v*)
+      verbose="$1"
+      ;;
+    -u)
+      surun=""
+      ;;
+    -*)
+      echo "Unknown option '$1'"
+      ;;
+    *)
+      if   [ "$position" -eq 1 ]; then
+        ref1=$(realpath "$1")
+      elif [ "$position" -eq 2 ]; then
+        ref2=$(realpath "$1")
+      elif [ "$position" -eq 3 ]; then
+        output="$1"
+      fi
+      position=$((position+1))
+      ;;
+  esac
+  shift
+done
+
+if [ -z "$output" ]; then
+  output="$HOME/tmp/dup_$(date +"%Y%m%d_%H%M%S").drp"
+fi
+
+if [ -d "$output" ]; then
+  output="$output/dup_$(date +%s).drp"
+fi
+
+echo "$0 $statement" >> "$output"
+echo "paths: '$ref1' '$ref2'" >> "$output"
+
+tic=$($surun date +"%s")
+if [ "$loglevel" = "quiet" ]; then
+  $surun "$cmd" --logfile "$output" $version $nocheckcontent $onlypath $regular_info $verbose "$ref1" "$ref2" 1>>/dev/null 2>>/dev/null
+else
+  $surun "$cmd" --logfile "$output" $version $nocheckcontent $onlypath $regular_info $verbose "$ref1" "$ref2"
+fi
+tac=$(date +"%s")
+
+tictac=$((tac-tic))
+printf "elapsed: %s\n" "$(date -u +"%H:%M:%S" --date="@$tictac")" >> "$output"
+
+echo "----------"
+colorize "$(grep -E '^[0-9: ]+ [!]' "$output")" "yellow"
+echo
+colorize "$(grep -E '^[0-9: ]+ [xX]' "$output")" "red"
+echo
+echo ".........."
+tail -n 3 "$output"
