@@ -1,6 +1,6 @@
 #!/bin/sh
 cwd=$(CDPATH= cd -- "$(dirname -- $(realpath "$0"))" && pwd)
-cmd="$cwd"/../target/debug/triff
+cmd="$cwd"/../target/release/triff
 
 onexit() {
   kill "$tail_pid" 2>/dev/null
@@ -89,9 +89,9 @@ while [ $# -gt 0 ]; do
       ;;
     *)
       if   [ "$position" -eq 1 ]; then
-        ref1=$(realpath "$1")
+        ref1=$($surun realpath "$1")
       elif [ "$position" -eq 2 ]; then
-        ref2=$(realpath "$1")
+        ref2=$($surun realpath "$1")
       elif [ "$position" -eq 3 ]; then
         output="$1"
       fi
