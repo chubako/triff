@@ -58,8 +58,8 @@ impl<'a> EntryDir<'a> {
 
     for entry in excluded {
       let entry_str = entry.as_os_str().to_string_lossy();
-      warn_msg!(self.options, "{WARN_NOT_IN} {:?} [outlier: {}]", self.target_str, entry_str);
-      action_msg!(self.options, "{NOOP}; ls -l '{:?}' '{:?}'", self.target_str, other.target_str);
+      warn_msg!(self.options, "{WARN_NOT_IN} '{}' [outlier: {}]", self.target_str, entry_str);
+      action_msg!(self.options, "{NOOP}; ls -l '{}' '{}'", self.target_str, other.target_str);
     }
 
     //This is not strictly necessary, but gives better outputs for users (walking directories in
@@ -89,13 +89,13 @@ impl<'a> EntryDir<'a> {
 
     match same_dir {
       true => {
-        success_msg!(self.options, "{SUCCESS_DIR} {:?} [{:?}]", other.target_str, self.target_str);
+        success_msg!(self.options, "{SUCCESS_DIR} '{}' ['{}']", other.target_str, self.target_str);
         action_msg!(self.options, "{SUCCESS_DIR}; rmdir '{}'", &self.target_str);
         return Ok(())
       },
       false => {
-        error_msg!(self.options, "{ERROR_DIRECTORY} {:?} [directory different]",self.target_str);
-        action_msg!(self.options, "{NOOP}; ls -l '{:?}' '{:?}'", self.target_str, other.target_str);
+        error_msg!(self.options, "{ERROR_DIRECTORY} '{}' [directory different]",self.target_str);
+        action_msg!(self.options, "{NOOP}; ls -l '{}' '{}'", self.target_str, other.target_str);
         return Err(Error::new(ErrorKind::InvalidData, ""));
       }
     }

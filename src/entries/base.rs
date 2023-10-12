@@ -157,8 +157,8 @@ impl<'a> Entry<'a> {
     if self.path==other.path {
       return Ok(true)
     } else {
-      error_msg!(self.options,"{ERROR_ONLY_PATH} {:?} [different_paths: {:?} {:?}]", &self.target_str, self.path, other.path);
-      action_msg!(self.options, "{NOOP}; ls -d -l '{:?}' '{:?}'", &self.target_str, &other.target_str);
+      error_msg!(self.options,"{ERROR_ONLY_PATH} '{}' [different_paths: {:?} {:?}]", &self.target_str, self.path, other.path);
+      action_msg!(self.options, "{NOOP}; ls -d -l '{}' '{}'", &self.target_str, &other.target_str);
       return Err(Error::new(ErrorKind::Other, ""))
     }
   }

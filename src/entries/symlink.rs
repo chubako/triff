@@ -26,7 +26,7 @@ impl<'a> EntrySymlink<'a> {
       Ok(alink) => Ok(alink),
       Err(_) => {
         error_msg!(self.options, "{ERROR_SYMLINK_READ} {:?} [can't read symlink]", self.path);
-        action_msg!(self.options, "{NOOP}; ls -d -l '{:?}'", self.path);
+        action_msg!(self.options, "{NOOP}; ls -d -l {:?}", self.path);
         Err(Error::new(ErrorKind::InvalidData, ""))
       }
     }
@@ -35,11 +35,11 @@ impl<'a> EntrySymlink<'a> {
   pub fn compare(&self, other: &Self) -> std::io::Result<()> {
     if self.link()? == other.link()? {
       success_msg!(self.options, "{SUCCESS_SYMLINK} {:?}", other.path);
-      action_msg!(self.options, "{SUCCESS_SYMLINK}; rm    '{:?}'", self.path);
+      action_msg!(self.options, "{SUCCESS_SYMLINK}; rm    {:?}", self.path);
       return Ok(())
     } else {
       error_msg!(self.options, "{ERROR_SYMLINKS_DIFFERENT} {:?} [symlinks different]", self.path);
-      action_msg!(self.options, "{NOOP}; ls -d -l '{:?}' '{:?}'", self.path, other.path);
+      action_msg!(self.options, "{NOOP}; ls -d -l {:?} {:?}", self.path, other.path);
       return Err(Error::new(ErrorKind::InvalidData, ""))
     }
   }
