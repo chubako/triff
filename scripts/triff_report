@@ -1,0 +1,85 @@
+#!/bin/sh
+cwd=$(CDPATH= cd -- "$(dirname -- $(realpath "$0"))" && pwd)
+
+colorize() {
+  msg="$1"
+  color="$2"
+
+  if [ -z "$msg" ]; then
+    return 1
+  fi
+
+  open="\033["
+  close="m"
+  reset="${open}0${close}"
+
+  case $color in
+    black) code=0
+    ;;
+    red) code=1
+    ;;
+    green) code=2
+    ;;
+    yellow) code=3
+    ;;
+    blue) code=4
+    ;;
+    magenta) code=5
+    ;;
+    cyan) code=6
+    ;;
+    white) code=7
+    ;;
+    *) code="$color"
+    ;;
+  esac
+
+  printf "${open}3${code}${close}%s$reset" "$msg"
+}
+
+exclude_regulars=""
+while [ $# -gt 0 ]; do
+  case $1 in
+    -r)
+      exclude_regulars="R"
+      ;;
+
+    -h|-\?|--help) show_help; exit ;;
+    -?*) printf 'WARN: Unknown option (ignored): %s\n' "$1" >&2 ;;
+    --) shift; break ;; # End of all options.
+    *) break # Default: break out of the loop.
+  esac
+  shift
+done
+
+logfile="$1"
+default_logfiles=~/tmp
+
+if [ -z "$logfile" ]; then
+  logfile="$default_logfiles"/$(ls -rt "$default_logfiles"|tail -n 1)
+fi
+
+if [ -z "$logfile" ]; then
+  echo "no logfile provided"
+  exit 1
+fi
+
+exclusions="${exclude_regulars}"
+if [ -n "$exclusions" ]; then
+  warnings_pattern='^[0-9: ]+ [!]'"[^$exclusions]"
+else
+  warnings_pattern='^[0-9: ]+ [!]'
+fi
+
+echo "----------"
+echo "logfile: '$logfile'"
+head -n 2 $logfile|tail -n 1
+echo "----------"
+if colorize "$(grep -E "$warnings_pattern" "$logfile")" "yellow"; then
+  echo
+fi
+if colorize "$(grep -E '^[0-9: ]+ [xX]' "$logfile")" "red"; then
+  echo
+fi
+echo ".........."
+tail -n 3 "$logfile"
