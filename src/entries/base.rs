@@ -48,7 +48,7 @@ impl<'a> Entry<'a> {
       libc::S_IFDIR  => 'd',
       libc::S_IFCHR  => 'c',
       libc::S_IFBLK  => 'b',
-      libc::S_IFREG  => '-',
+      libc::S_IFREG  => 'r',
       libc::S_IFLNK  => 'l',
       libc::S_IFSOCK => 's',
       libc::S_IFIFO  => 'f',
@@ -167,7 +167,8 @@ impl<'a> Entry<'a> {
       if check_file_types(self.mode, other.mode) {
         Ok(())
       } else {
-        error_msg!(self.options,"{ERROR_FILE_TYPE} {} [different_types: {} {}]", &self.target_str, &self.file_type, &self.file_type);
+        let other_type = Self::file_type(other.mode);
+        error_msg!(self.options,"{ERROR_FILE_TYPE} {} [different_types: {} {}]", &self.target_str, &self.file_type, &other_type);
         action_msg!(self.options, "{NOOP}; ls -d -l '{}' '{}'", &self.target_str, &other.target_str);
         Err(Error::new(ErrorKind::Other, ""))
       }
