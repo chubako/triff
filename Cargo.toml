@@ -1,6 +1,6 @@
 [package]
 name = "triff"
-version = "1.9.2"
+version = "1.9.3"
 authors = ["chubako <chubako@armeto.com>"]
 edition = "2018"
 
